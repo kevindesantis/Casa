@@ -94,3 +94,7 @@ button:disabled { opacity: .4; cursor: not-allowed; }
 .error-text { color:var(--danger) !important; }
 .top-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
 @media (max-width: 520px) { .auth-actions { grid-template-columns:1fr; } .top-actions { flex-direction:column; align-items:flex-end; } }
+
+.engine-status { margin-top:10px; padding:9px 11px; border:1px solid var(--border); border-radius:12px; font-size:12px; color:var(--muted); background:color-mix(in srgb, var(--card) 80%, var(--bg)); }
+.engine-status.ok { color:var(--ok); border-color:color-mix(in srgb, var(--ok) 30%, var(--border)); }
+.engine-status.warn { color:var(--warn); border-color:color-mix(in srgb, var(--warn) 30%, var(--border)); }

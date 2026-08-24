@@ -1,4 +1,4 @@
-const CACHE='casa-live-v2';
+const CACHE='casa-live-v3';
 const ASSETS=['/styles.css','/manifest.webmanifest'];
 
 self.addEventListener('install', event => {

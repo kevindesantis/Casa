@@ -4,3 +4,7 @@
 .DS_Store
 .vercel
 node_modules
+.dev.vars
+worker/.dev.vars
+.wrangler
+worker/.wrangler

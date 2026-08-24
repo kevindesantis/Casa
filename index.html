@@ -55,12 +55,13 @@
 
         <article class="panel actions-panel">
           <p class="label">TEST REALTIME</p>
+          <div id="engineStatus" class="engine-status">Motore cloud: non configurato</div>
           <div class="action-stack">
             <button id="presenceBtn" class="primary">Simula presenza Aqara</button>
             <button id="blackoutBtn" class="danger">Simula blackout + ritorno</button>
             <button id="reconcileBtn" class="secondary">Riconcilia adesso</button>
           </div>
-          <p class="hint">Adesso gli stati e gli eventi vengono salvati su Supabase e sincronizzati tra più dispositivi.</p>
+          <p class="hint">Gli stati sono su Supabase. Se il motore Cloudflare è collegato, la riconciliazione continua anche con l’app chiusa.</p>
         </article>
       </section>
 

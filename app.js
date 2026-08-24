@@ -24,6 +24,7 @@ const RULES = [
 ];
 
 let client = null;
+let engineUrl = '';
 let session = null;
 let home = null;
 let devices = [];
@@ -74,6 +75,9 @@ async function init(){
     const config = await response.json();
     if(!response.ok) throw new Error(config.error || 'Configurazione Supabase mancante');
     if(!window.supabase?.createClient) throw new Error('Libreria Supabase non caricata');
+
+    engineUrl = String(config.casaLiveEngineUrl || '').replace(/\/$/, '');
+    await checkEngineHealth();
 
     client = window.supabase.createClient(config.supabaseUrl, config.supabasePublishableKey, {
       auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
@@ -269,7 +273,7 @@ async function computeDesired(d){
   return desiredValue(d);
 }
 
-async function reconcile(reason='Riconciliazione'){
+async function reconcileLocal(reason='Riconciliazione locale'){
   for(const d of [...devices]){
     if(!d.online || isOverride(d)) continue;
     const desired = await computeDesired(d);
@@ -282,6 +286,56 @@ async function reconcile(reason='Riconciliazione'){
     }else if(desiredValue(d) !== desired){
       await writeDevice(d,{actual,desired,source:'desired-state'});
     }
+  }
+}
+
+async function checkEngineHealth(){
+  const el = $('engineStatus');
+  if(!el) return;
+  el.classList.remove('ok','warn');
+  if(!engineUrl){
+    el.textContent = 'Motore cloud: non configurato — controllo solo mentre l’app è aperta';
+    el.classList.add('warn');
+    return;
+  }
+  el.textContent = 'Motore cloud: verifica…';
+  try{
+    const response = await fetch(`${engineUrl}/health`, {cache:'no-store'});
+    const data = await response.json();
+    if(!response.ok || !data.ok) throw new Error(data.error || 'Health check fallito');
+    el.textContent = `Motore cloud online · v${data.version || '?'} · sicurezza 1 min`;
+    el.classList.add('ok');
+  }catch(err){
+    console.error('Engine health', err);
+    el.textContent = 'Motore cloud non raggiungibile';
+    el.classList.add('warn');
+  }
+}
+
+async function reconcile(reason='Riconciliazione'){
+  if(!engineUrl) return reconcileLocal(reason);
+  if(!session?.access_token || !home?.id) return;
+  try{
+    const response = await fetch(`${engineUrl}/reconcile`, {
+      method:'POST',
+      headers:{
+        'content-type':'application/json',
+        'authorization':`Bearer ${session.access_token}`
+      },
+      body:JSON.stringify({homeId:home.id,reason})
+    });
+    const data = await response.json();
+    if(!response.ok) throw new Error(data.error || `Motore cloud HTTP ${response.status}`);
+    await loadAll();
+    return data;
+  }catch(err){
+    console.error('Cloud reconcile', err);
+    if($('engineStatus')){
+      $('engineStatus').textContent='Motore cloud errore · fallback locale attivo';
+      $('engineStatus').classList.remove('ok');
+      $('engineStatus').classList.add('warn');
+    }
+    return reconcileLocal(`${reason} · fallback locale`);
   }
 }
 
@@ -378,7 +432,7 @@ function renderDevices(){
 function renderRules(){ $('rules').innerHTML=RULES.map((r,i)=>`<article class="rule"><div class="rule-index">${i+1}</div><div><div class="rule-title">${esc(r.title)}</div><div class="rule-desc">${esc(r.desc)}</div></div><div class="rule-status">ATTIVA</div></article>`).join(''); }
 function eventTitle(e){
   const p=e.payload||{};
-  const names={system_online:'Sistema collegato',blackout:'BLACKOUT simulato',power_restored:'Corrente ripristinata',state_mismatch:'Disallineamento rilevato',state_corrected:'Stato corretto',manual_override:'Override manuale',presence_on:'Presenza rilevata',presence_off:'Assenza rilevata',automation_wait:'Trigger in attesa',automation_triggered:'Automazione eseguita',automation_cancelled:'Automazione annullata',home_mode_changed:'Modalità casa cambiata'};
+  const names={system_online:'Sistema collegato',blackout:'BLACKOUT simulato',power_restored:'Corrente ripristinata',state_mismatch:'Disallineamento rilevato',state_corrected:'Stato corretto',command_queued:'Comando in coda',provider_state:'Aggiornamento dispositivo',manual_override:'Override manuale',presence_on:'Presenza rilevata',presence_off:'Assenza rilevata',automation_wait:'Trigger in attesa',automation_triggered:'Automazione eseguita',automation_cancelled:'Automazione annullata',home_mode_changed:'Modalità casa cambiata'};
   return p.name ? `${names[e.event_type]||e.event_type} · ${p.name}` : (names[e.event_type]||e.event_type);
 }
 function eventDetail(e){
@@ -411,5 +465,6 @@ $('reconcileBtn').addEventListener('click',()=>reconcile('Controllo manuale').ca
 $('clearLog').addEventListener('click',()=>{ events=[];renderEvents(); });
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
-setInterval(() => { if(session && home) reconcile('Controllo periodico').catch(console.error); }, 60_000);
+setInterval(() => { if(session && home && !engineUrl) reconcileLocal('Controllo periodico locale').catch(console.error); }, 60_000);
+setInterval(() => { if(engineUrl) checkEngineHealth().catch(console.error); }, 5*60_000);
 init();
