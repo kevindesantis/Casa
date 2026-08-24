@@ -1,0 +1,4 @@
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+SUPABASE_SECRET_KEY=sb_secret_xxx
+PROVIDER_INGEST_SECRET=generate-a-long-random-value
+APP_ORIGIN=https://your-casa-live.vercel.app

@@ -1,3 +1,14 @@
 name = "casa-live-engine"
-main = "src/index.ts"
+main = "src/index.js"
 compatibility_date = "2026-08-24"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[durable_objects.bindings]]
+name = "HOME_ENGINE"
+class_name = "HomeEngine"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["HomeEngine"]
