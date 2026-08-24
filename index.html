@@ -11,74 +11,97 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div>
-      <p class="eyebrow">SMART HOME CLOUD</p>
-      <h1>Casa Live</h1>
+  <section id="authGate" class="auth-gate">
+    <div class="auth-card">
+      <p class="eyebrow">CASA LIVE · SUPABASE</p>
+      <h1>Accedi alla tua casa</h1>
+      <p class="muted">I dati sono protetti con Supabase Auth + Row Level Security.</p>
+      <form id="authForm" class="auth-form">
+        <label>Email<input id="authEmail" type="email" autocomplete="email" required placeholder="nome@email.it"></label>
+        <label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="Almeno 6 caratteri"></label>
+        <div class="auth-actions">
+          <button class="primary" type="submit">Accedi</button>
+          <button class="secondary" id="signUpBtn" type="button">Crea account</button>
+        </div>
+      </form>
+      <p id="authMessage" class="hint" aria-live="polite">Connessione a Supabase…</p>
     </div>
-    <div class="system-pill"><span class="dot"></span><span id="systemStatus">Sistema online</span></div>
-  </header>
+  </section>
 
-  <main>
-    <section class="hero-grid">
-      <article class="panel status-panel">
-        <div class="panel-head">
-          <div>
-            <p class="label">MODALITÀ CASA</p>
-            <h2 id="modeLabel">Casa</h2>
+  <div id="appShell" hidden>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">SMART HOME CLOUD</p>
+        <h1>Casa Live</h1>
+      </div>
+      <div class="top-actions">
+        <div class="system-pill"><span class="dot"></span><span id="systemStatus">Sistema online</span></div>
+        <button id="logoutBtn" class="secondary small">Esci</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-grid">
+        <article class="panel status-panel">
+          <div class="panel-head">
+            <div>
+              <p class="label">MODALITÀ CASA</p>
+              <h2 id="modeLabel">Casa</h2>
+            </div>
+            <button id="cycleMode" class="secondary">Cambia</button>
           </div>
-          <button id="cycleMode" class="secondary">Cambia</button>
+          <div class="stats" id="stats"></div>
+        </article>
+
+        <article class="panel actions-panel">
+          <p class="label">TEST REALTIME</p>
+          <div class="action-stack">
+            <button id="presenceBtn" class="primary">Simula presenza Aqara</button>
+            <button id="blackoutBtn" class="danger">Simula blackout + ritorno</button>
+            <button id="reconcileBtn" class="secondary">Riconcilia adesso</button>
+          </div>
+          <p class="hint">Adesso gli stati e gli eventi vengono salvati su Supabase e sincronizzati tra più dispositivi.</p>
+        </article>
+      </section>
+
+      <section class="section-head">
+        <div>
+          <p class="label">STANZE E DISPOSITIVI</p>
+          <h2>Stato realtime</h2>
         </div>
-        <div class="stats" id="stats"></div>
-      </article>
+        <span class="muted" id="lastSync">Connessione…</span>
+      </section>
+      <section id="rooms" class="rooms-grid"></section>
 
-      <article class="panel actions-panel">
-        <p class="label">TEST V1</p>
-        <div class="action-stack">
-          <button id="presenceBtn" class="primary">Simula presenza Aqara</button>
-          <button id="blackoutBtn" class="danger">Simula blackout + ritorno</button>
-          <button id="reconcileBtn" class="secondary">Riconcilia adesso</button>
+      <section class="section-head">
+        <div>
+          <p class="label">REGOLE ATTIVE</p>
+          <h2>Automazioni</h2>
         </div>
-        <p class="hint">Questi test dimostrano il motore eventi e lo stato desiderato prima di collegare i cloud reali.</p>
-      </article>
-    </section>
+      </section>
+      <section id="rules" class="rules-list"></section>
 
-    <section class="section-head">
-      <div>
-        <p class="label">STANZE E DISPOSITIVI</p>
-        <h2>Stato realtime</h2>
-      </div>
-      <span class="muted" id="lastSync">Aggiornato ora</span>
-    </section>
-    <section id="rooms" class="rooms-grid"></section>
+      <section class="section-head">
+        <div>
+          <p class="label">DEBUGGER</p>
+          <h2>Timeline eventi</h2>
+        </div>
+        <button id="clearLog" class="secondary small">Pulisci vista</button>
+      </section>
+      <section class="panel event-panel">
+        <div id="events" class="events" aria-live="polite"></div>
+      </section>
+    </main>
 
-    <section class="section-head">
-      <div>
-        <p class="label">REGOLE ATTIVE</p>
-        <h2>Automazioni</h2>
-      </div>
-    </section>
-    <section id="rules" class="rules-list"></section>
+    <nav class="bottom-nav" aria-label="Navigazione">
+      <button class="active">Casa</button>
+      <button disabled>Stanze</button>
+      <button disabled>Automazioni</button>
+      <button disabled>Eventi</button>
+    </nav>
+  </div>
 
-    <section class="section-head">
-      <div>
-        <p class="label">DEBUGGER</p>
-        <h2>Timeline eventi</h2>
-      </div>
-      <button id="clearLog" class="secondary small">Pulisci</button>
-    </section>
-    <section class="panel event-panel">
-      <div id="events" class="events" aria-live="polite"></div>
-    </section>
-  </main>
-
-  <nav class="bottom-nav" aria-label="Navigazione">
-    <button class="active">Casa</button>
-    <button disabled>Stanze</button>
-    <button disabled>Automazioni</button>
-    <button disabled>Eventi</button>
-  </nav>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/app.js" defer></script>
 </body>
 </html>
