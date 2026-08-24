@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Casa Live</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">SMART HOME CLOUD</p>
+      <h1>Casa Live</h1>
+    </div>
+    <div class="system-pill"><span class="dot"></span><span id="systemStatus">Sistema online</span></div>
+  </header>
+
+  <main>
+    <section class="hero-grid">
+      <article class="panel status-panel">
+        <div class="panel-head">
+          <div>
+            <p class="label">MODALITÀ CASA</p>
+            <h2 id="modeLabel">Casa</h2>
+          </div>
+          <button id="cycleMode" class="secondary">Cambia</button>
+        </div>
+        <div class="stats" id="stats"></div>
+      </article>
+
+      <article class="panel actions-panel">
+        <p class="label">TEST V1</p>
+        <div class="action-stack">
+          <button id="presenceBtn" class="primary">Simula presenza Aqara</button>
+          <button id="blackoutBtn" class="danger">Simula blackout + ritorno</button>
+          <button id="reconcileBtn" class="secondary">Riconcilia adesso</button>
+        </div>
+        <p class="hint">Questi test dimostrano il motore eventi e lo stato desiderato prima di collegare i cloud reali.</p>
+      </article>
+    </section>
+
+    <section class="section-head">
+      <div>
+        <p class="label">STANZE E DISPOSITIVI</p>
+        <h2>Stato realtime</h2>
+      </div>
+      <span class="muted" id="lastSync">Aggiornato ora</span>
+    </section>
+    <section id="rooms" class="rooms-grid"></section>
+
+    <section class="section-head">
+      <div>
+        <p class="label">REGOLE ATTIVE</p>
+        <h2>Automazioni</h2>
+      </div>
+    </section>
+    <section id="rules" class="rules-list"></section>
+
+    <section class="section-head">
+      <div>
+        <p class="label">DEBUGGER</p>
+        <h2>Timeline eventi</h2>
+      </div>
+      <button id="clearLog" class="secondary small">Pulisci</button>
+    </section>
+    <section class="panel event-panel">
+      <div id="events" class="events" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navigazione">
+    <button class="active">Casa</button>
+    <button disabled>Stanze</button>
+    <button disabled>Automazioni</button>
+    <button disabled>Eventi</button>
+  </nav>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
